@@ -218,7 +218,6 @@ class GameState: ObservableObject {
     private func isValidWord(_ word: String) -> Bool {
         guard word.count >= 3 else { return false }
 
-        #if os(iOS) || os(macOS)
         let checker = UITextChecker()
         let range = NSRange(location: 0, length: word.utf16.count)
         let misspelledRange = checker.rangeOfMisspelledWord(
@@ -229,10 +228,6 @@ class GameState: ObservableObject {
             language: "en"
         )
         return misspelledRange.location == NSNotFound
-        #else
-        // For visionOS, use simple validation for now
-        return word.count >= 3
-        #endif
     }
     
     func startTimer() {
