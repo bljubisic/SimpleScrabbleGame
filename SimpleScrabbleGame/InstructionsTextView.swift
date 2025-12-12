@@ -1,0 +1,63 @@
+//
+//  InstructionsTextView.swift
+//  SimpleScrabbleGame
+//
+//  Created by Bratislav Ljubisic Home  on 7/29/25.
+//
+import SwiftUI
+
+
+struct InstructionTextView: View {
+    @ObservedObject var gameState: GameState
+    
+    var body: some View {
+        VStack {
+            // Timer
+            VStack {
+                Text("TIME")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                
+                Text(String(format: "%.1f", gameState.timeRemaining))
+                    .font(.title2)
+                    .fontWeight(.bold)
+                    .foregroundColor(timerColor)
+                    .monospacedDigit()
+            }
+            List(gameState.scores, id: \.timeStamp) { score in
+                Text("\(score.selectedLevel.title) - \(score.points)pts (\(score.wordsFormed) words)")
+                    .font(.system(size: 32, weight: .bold, design: .rounded))
+                    .foregroundColor(.white)
+            }
+            VStack(spacing: 8) {
+                Text("Tap letters to spell words!")
+                    .font(.title)
+                Text("Current Word: \(gameState.currentWord.isEmpty ? "—" : gameState.currentWord)")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                    .foregroundColor(.cyan)
+                Text("Score: \(gameState.currentScore)")
+                    .font(.headline)
+                    .foregroundColor(.yellow)
+                Text("Words: \(gameState.wordsFormed.count)")
+                    .font(.subheadline)
+                    .foregroundColor(.green)
+            }
+            .padding()
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+        .animation(.easeInOut(duration: 0.3), value: gameState.currentScore)
+    }
+    
+    private var timerColor: Color {
+        if gameState.timeRemaining > 5.0 {
+            return .green
+        } else if gameState.timeRemaining > 2.0 {
+            return .orange
+        } else {
+            return .red
+        }
+    }
+}
