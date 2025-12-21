@@ -41,7 +41,7 @@ struct GameCompleteOverlay: View {
                         .font(.caption)
                         .foregroundColor(.white.opacity(0.6))
                     
-                    Text("\(gameState.timeRemaining)")
+                    Text("\(gameState.currentScore)")
                         .font(.system(size: 28, weight: .bold, design: .rounded))
                         .foregroundColor(.yellow)
                         .monospacedDigit()

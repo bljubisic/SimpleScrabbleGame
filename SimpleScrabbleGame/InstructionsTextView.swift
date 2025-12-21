@@ -9,6 +9,9 @@ import SwiftUI
 
 struct InstructionTextView: View {
     @ObservedObject var gameState: GameState
+    @State private var showFeedback: Bool = false
+    @State private var feedbackMessage: String = ""
+    @State private var feedbackColor: Color = .green
     
     var body: some View {
         VStack {
@@ -42,6 +45,41 @@ struct InstructionTextView: View {
                 Text("Words: \(gameState.wordsFormed.count)")
                     .font(.subheadline)
                     .foregroundColor(.green)
+                
+                // Action buttons for VisionOS
+                HStack(spacing: 12) {
+                    Button(action: { gameState.clearSelection() }) {
+                        Text("Clear")
+                            .fontWeight(.semibold)
+                            .frame(minWidth: 100)
+                            .padding(.vertical, 8)
+                            .padding(.horizontal, 16)
+                    }
+                    .background(Color.red.opacity(0.8))
+                    .foregroundColor(.white)
+                    .cornerRadius(8)
+                    .disabled(gameState.selectedSpheres.isEmpty)
+                    .opacity(gameState.selectedSpheres.isEmpty ? 0.5 : 1.0)
+                    
+                    Button(action: { 
+                        // Check if word is valid before submission
+                        if gameState.currentWord.count >= 3 {
+                            gameState.submitWord()
+                        }
+                    }) {
+                        Text("Submit")
+                            .fontWeight(.bold)
+                            .frame(minWidth: 100)
+                            .padding(.vertical, 8)
+                            .padding(.horizontal, 16)
+                    }
+                    .background(Color.green)
+                    .foregroundColor(.white)
+                    .cornerRadius(8)
+                    .disabled(gameState.currentWord.count < 3)
+                    .opacity(gameState.currentWord.count < 3 ? 0.5 : 1.0)
+                }
+                .padding(.top, 8)
             }
             .padding()
         }

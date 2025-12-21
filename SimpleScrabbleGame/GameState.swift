@@ -357,19 +357,17 @@ class GameState: ObservableObject {
         let randomLetter = generateRandomLetter()
         addLetterToSphere(sphereEntity, letter: randomLetter)
 
-        // Add gentle rotation animation
-        let rotationAnimation = FromToByAnimation(
-            from: Transform(rotation: simd_quatf(angle: 0, axis: [0, 1, 0])),
-            to: Transform(rotation: simd_quatf(angle: .pi * 2, axis: [0, 1, 0])),
-            duration: Double.random(in: 5.0...15.0),
-            timing: .linear,
-            isAdditive: false,
-            repeatMode: .repeat,
-            fillMode: .forwards
-        )
+        // Orient sphere so letter faces toward anchor/player (origin)
+        // Calculate direction from sphere to origin (where player/anchor is)
+        let directionToOrigin = -position // Direction from sphere to origin
+        if length(directionToOrigin) > 0.001 {
+            // Use lookAt style rotation
+            sphereEntity.look(at: SIMD3<Float>(0, 0, 0), from: position, relativeTo: nil)
 
-        if let animationResource = try? AnimationResource.generate(with: rotationAnimation) {
-            sphereEntity.playAnimation(animationResource)
+            // The sphere's UV mapping places the center of the texture on the side
+            // Rotate -90 degrees around Y to bring the letter to face the anchor
+            let correctionRotation = simd_quatf(angle: -.pi / 2, axis: SIMD3<Float>(0, 1, 0))
+            sphereEntity.transform.rotation = sphereEntity.transform.rotation * correctionRotation
         }
 
 #if os(visionOS)
@@ -385,41 +383,58 @@ class GameState: ObservableObject {
     }
 
     private func generateRandomLetter() -> String {
-        let letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        let letters = "AAAABCDEEEEEFGHIIIIJKLMNOOOOOPQRSTUUUUVWXYZ"
         return String(letters.randomElement()!)
     }
 
     private func addLetterToSphere(_ sphere: ModelEntity, letter: String) {
-        // Create text mesh for the letter
-        let textMesh = MeshResource.generateText(
-            letter,
-            extrusionDepth: 0.01,
-            font: .systemFont(ofSize: 0.08),
-            containerFrame: .zero,
-            alignment: .center,
-            lineBreakMode: .byWordWrapping
-        )
+        // Generate a texture with the letter on it
+        guard let letterTexture = generateLetterTexture(letter: letter, sphereColor: sphere.model?.materials.first as? SimpleMaterial) else {
+            return
+        }
 
-        // Create material for the text (contrasting color)
-        var textMaterial = SimpleMaterial()
-        textMaterial.color = .init(tint: .white)
-        textMaterial.roughness = 0.2
-        textMaterial.metallic = 0.8
+        // Update the sphere's material to include the letter texture
+        if var material = sphere.model?.materials.first as? SimpleMaterial {
+            material.color = .init(tint: .init(cgColor: material.color.tint.cgColor), texture: .init(letterTexture))
+            sphere.model?.materials = [material]
+        }
+    }
 
-        // Create text entity
-        let textEntity = ModelEntity(mesh: textMesh, materials: [textMaterial])
+    private func generateLetterTexture(letter: String, sphereColor: SimpleMaterial?) -> TextureResource? {
+        let size = CGSize(width: 512, height: 512)
+        let renderer = UIGraphicsImageRenderer(size: size)
 
-        // Position the text slightly in front of the sphere center
-        // Offset it so it appears on the surface
-        textEntity.position = SIMD3<Float>(0, 0, 0.1)
+        let image = renderer.image { context in
+            // Fill background with sphere's color
+            if let color = sphereColor?.color.tint.cgColor {
+                context.cgContext.setFillColor(color)
+            } else {
+                context.cgContext.setFillColor(UIColor.blue.cgColor)
+            }
+            context.cgContext.fill(CGRect(origin: .zero, size: size))
 
-        // Add billboard component so text always faces the camera
-        #if os(visionOS)
-        textEntity.components.set(BillboardComponent())
-        #endif
+            // Draw the letter in pure bright white
+            let attributes: [NSAttributedString.Key: Any] = [
+                .font: UIFont.systemFont(ofSize: 200, weight: .bold),
+                .foregroundColor: UIColor.white
+            ]
 
-        // Add text as child of sphere
-        sphere.addChild(textEntity)
+            let textSize = (letter as NSString).size(withAttributes: attributes)
+
+            // Draw letter only at center so it appears on the front side of sphere
+            let position = CGPoint(x: (size.width - textSize.width) / 2, y: (size.height - textSize.height) / 2)
+            (letter as NSString).draw(at: position, withAttributes: attributes)
+        }
+
+        // Convert UIImage to TextureResource
+        guard let cgImage = image.cgImage else { return nil }
+
+        do {
+            return try TextureResource.generate(from: cgImage, options: .init(semantic: .color))
+        } catch {
+            print("Failed to generate texture: \(error)")
+            return nil
+        }
     }
     
     private func generateNonIntersectingPositions(for numberOfSpheres: Int, excluding excludedPositions: [SIMD3<Float>] = [], isARMode: Bool = false) -> [SIMD3<Float>] {
