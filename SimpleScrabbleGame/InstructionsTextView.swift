@@ -17,7 +17,7 @@ struct InstructionTextView: View {
         VStack {
             // Timer
             VStack {
-                Text("TIME")
+                Text(NSLocalizedString("TIME", comment: "Timer label"))
                     .font(.caption)
                     .foregroundColor(.secondary)
                 
@@ -33,23 +33,23 @@ struct InstructionTextView: View {
                     .foregroundColor(.white)
             }
             VStack(spacing: 8) {
-                Text("Tap letters to spell words!")
+                Text(NSLocalizedString("Tap letters to spell words!", comment: "Game instruction"))
                     .font(.title)
-                Text("Current Word: \(gameState.currentWord.isEmpty ? "—" : gameState.currentWord)")
+                Text(String(format: NSLocalizedString("Current Word: %@", comment: "Current word display"), gameState.currentWord.isEmpty ? NSLocalizedString("—", comment: "Empty state") : gameState.currentWord))
                     .font(.title2)
                     .fontWeight(.bold)
                     .foregroundColor(.cyan)
-                Text("Score: \(gameState.currentScore)")
+                Text(String(format: NSLocalizedString("Score: %d", comment: "Score display"), gameState.currentScore))
                     .font(.headline)
                     .foregroundColor(.yellow)
-                Text("Words: \(gameState.wordsFormed.count)")
+                Text(String(format: NSLocalizedString("Words: %d", comment: "Word count display"), gameState.wordsFormed.count))
                     .font(.subheadline)
                     .foregroundColor(.green)
                 
                 // Action buttons for VisionOS
                 HStack(spacing: 12) {
                     Button(action: { gameState.clearSelection() }) {
-                        Text("Clear")
+                        Text(NSLocalizedString("Clear", comment: "Clear button"))
                             .fontWeight(.semibold)
                             .frame(minWidth: 100)
                             .padding(.vertical, 8)
@@ -67,7 +67,7 @@ struct InstructionTextView: View {
                             gameState.submitWord()
                         }
                     }) {
-                        Text("Submit")
+                        Text(NSLocalizedString("Submit", comment: "Submit button"))
                             .fontWeight(.bold)
                             .frame(minWidth: 100)
                             .padding(.vertical, 8)

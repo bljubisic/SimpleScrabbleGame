@@ -219,13 +219,19 @@ class GameState: ObservableObject {
         guard word.count >= 3 else { return false }
 
         let checker = UITextChecker()
+        
+        var language = Locale.current.language.minimalIdentifier
+        
+        if (UITextChecker.availableLanguages.firstIndex(of: language) == nil) {
+            language = "en"
+        }
         let range = NSRange(location: 0, length: word.utf16.count)
         let misspelledRange = checker.rangeOfMisspelledWord(
             in: word,
             range: range,
             startingAt: 0,
             wrap: false,
-            language: "en"
+            language: language
         )
         return misspelledRange.location == NSNotFound
     }

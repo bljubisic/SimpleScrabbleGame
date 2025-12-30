@@ -20,24 +20,24 @@ struct GameCompleteOverlay: View {
                 Text(gameState.timeRemaining <= 0 ? "⏰" : "🏆")
                     .font(.system(size: 40))
                 
-                Text(gameState.timeRemaining <= 0 ? "Time's Up!" : "Congratulations!")
+                Text(gameState.timeRemaining <= 0 ? NSLocalizedString("Time's Up!", comment: "Game over by timeout") : NSLocalizedString("Congratulations!", comment: "Game completed successfully"))
                     .font(.largeTitle)
                     .fontWeight(.bold)
                     .foregroundColor(.white)
                 
                 if gameState.timeRemaining > 0 {
-                    Text("You've completed all levels!")
+                    Text(NSLocalizedString("You've completed all levels!", comment: "All levels completed message"))
                         .font(.headline)
                         .foregroundColor(.white.opacity(0.8))
                 } else {
-                    Text("Better luck next time!")
+                    Text(NSLocalizedString("Better luck next time!", comment: "Game over message"))
                         .font(.headline)
                         .foregroundColor(.white.opacity(0.8))
                 }
                 
                 // Final Score Display
                 VStack(spacing: 8) {
-                    Text("FINAL SCORE")
+                    Text(NSLocalizedString("FINAL SCORE", comment: "Final score label"))
                         .font(.caption)
                         .foregroundColor(.white.opacity(0.6))
                     
@@ -46,7 +46,7 @@ struct GameCompleteOverlay: View {
                         .foregroundColor(.yellow)
                         .monospacedDigit()
                     
-                    Text("points")
+                    Text(NSLocalizedString("points", comment: "Points label"))
                         .font(.subheadline)
                         .foregroundColor(.white.opacity(0.6))
                 }
@@ -54,7 +54,7 @@ struct GameCompleteOverlay: View {
                 .background(.ultraThinMaterial)
                 .cornerRadius(16)
                 
-                Button("Play Again") {
+                Button(NSLocalizedString("Play Again", comment: "Play again button")) {
                     Task {
                         gameState.resetGame()
                         #if os(visionOS)

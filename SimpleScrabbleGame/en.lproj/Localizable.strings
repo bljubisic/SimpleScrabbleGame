@@ -1,0 +1,52 @@
+/* 
+  Localizable.strings
+  SimpleScrabbleGame
+  
+  English Localization
+*/
+
+/* Game UI - Timer and Score */
+"TIME" = "TIME";
+"SCORE" = "SCORE";
+"points" = "points";
+
+/* Game Instructions */
+"Tap letters to spell words!" = "Tap letters to spell words!";
+"Current Word: %@" = "Current Word: %@";
+"Score: %d" = "Score: %d";
+"Words: %d" = "Words: %d";
+"Score: %d | Words: %d" = "Score: %d | Words: %d";
+
+/* Buttons */
+"Clear" = "Clear";
+"Submit" = "Submit";
+"Play Again" = "Play Again";
+"Reset placement" = "Reset placement";
+
+/* Level Selection */
+"Pick Your Difficulty" = "Pick Your Difficulty";
+"Easy" = "Easy";
+"Medium" = "Medium";
+"Hard" = "Hard";
+
+/* Game Complete Screen */
+"Time's Up!" = "Time's Up!";
+"Congratulations!" = "Congratulations!";
+"You've completed all levels!" = "You've completed all levels!";
+"Better luck next time!" = "Better luck next time!";
+"FINAL SCORE" = "FINAL SCORE";
+
+/* Level descriptions */
+"%@ - %dpts (%d words)" = "%@ - %dpts (%d words)";
+
+/* Empty states */
+"—" = "—";
+
+/* Error messages */
+"Game View not found" = "Game View not found";
+"Selected level: %@" = "Selected level: %@";
+"Implement a navigation destination to your game view." = "Implement a navigation destination to your game view.";
+
+/* Debugging messages (optional to localize) */
+"Failed to setup audio session: %@" = "Failed to setup audio session: %@";
+"Failed to play balloon pop sound: %@" = "Failed to play balloon pop sound: %@";

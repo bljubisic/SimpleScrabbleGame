@@ -61,7 +61,7 @@ struct GameView: View {
                     HStack(alignment: .center) {
                         // Timer display
                         VStack(spacing: 4) {
-                            Text("TIME")
+                            Text(NSLocalizedString("TIME", comment: "Timer label"))
                                 .font(.caption2)
                                 .foregroundColor(.secondary)
 
@@ -80,7 +80,7 @@ struct GameView: View {
 
                         // Score display
                         VStack(spacing: 4) {
-                            Text("SCORE")
+                            Text(NSLocalizedString("SCORE", comment: "Score label"))
                                 .font(.caption2)
                                 .foregroundColor(.secondary)
 
@@ -102,7 +102,7 @@ struct GameView: View {
                         }
                         .background(.ultraThinMaterial)
                         .clipShape(Circle())
-                        .accessibilityLabel("Reset placement")
+                        .accessibilityLabel(NSLocalizedString("Reset placement", comment: "Reset button accessibility label"))
                     }
                     .padding(.horizontal, 16)
                     .padding(.top, 8)
@@ -115,11 +115,11 @@ struct GameView: View {
                         VStack(spacing: 12) {
                             // Current word and score
                             VStack(spacing: 4) {
-                                Text("Current Word: \(observedGameState.currentWord.isEmpty ? "—" : observedGameState.currentWord)")
+                                Text(String(format: NSLocalizedString("Current Word: %@", comment: "Current word display"), observedGameState.currentWord.isEmpty ? NSLocalizedString("—", comment: "Empty state") : observedGameState.currentWord))
                                     .font(.title2)
                                     .fontWeight(.bold)
                                     .foregroundColor(.cyan)
-                                Text("Score: \(observedGameState.currentScore) | Words: \(observedGameState.wordsFormed.count)")
+                                Text(String(format: NSLocalizedString("Score: %d | Words: %d", comment: "Score and word count"), observedGameState.currentScore, observedGameState.wordsFormed.count))
                                     .font(.subheadline)
                                     .foregroundColor(.white)
                             }
@@ -127,7 +127,7 @@ struct GameView: View {
                             // Action buttons
                             HStack(spacing: 12) {
                                 Button(action: { gameState.clearSelection() }) {
-                                    Text("Clear")
+                                    Text(NSLocalizedString("Clear", comment: "Clear button"))
                                         .fontWeight(.semibold)
                                         .frame(maxWidth: .infinity)
                                         .padding(.vertical, 12)
@@ -138,7 +138,7 @@ struct GameView: View {
                                 .disabled(observedGameState.selectedSpheres.isEmpty)
 
                                 Button(action: { gameState.submitWord() }) {
-                                    Text("Submit")
+                                    Text(NSLocalizedString("Submit", comment: "Submit button"))
                                         .fontWeight(.bold)
                                         .frame(maxWidth: .infinity)
                                         .padding(.vertical, 12)
