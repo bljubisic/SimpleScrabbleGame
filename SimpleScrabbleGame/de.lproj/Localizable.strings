@@ -1,0 +1,58 @@
+/* 
+  Localizable.strings
+  SimpleScrabbleGame
+  
+  German Localization
+*/
+
+/* Game UI - Timer and Score */
+"TIME" = "ZEIT";
+"SCORE" = "PUNKTE";
+"points" = "Punkte";
+
+/* Game Instructions */
+"Tap letters to spell words!" = "Tippe auf Buchstaben, um Wörter zu bilden!";
+"Current Word: %@" = "Aktuelles Wort: %@";
+"Score: %d" = "Punkte: %d";
+"Words: %d" = "Wörter: %d";
+"Score: %d | Words: %d" = "Punkte: %d | Wörter: %d";
+
+/* Buttons */
+"Clear" = "Löschen";
+"Submit" = "Absenden";
+"Play Again" = "Nochmal spielen";
+"Reset placement" = "Platzierung zurücksetzen";
+
+/* Level Selection */
+"Pick Your Difficulty" = "Wähle deinen Schwierigkeitsgrad";
+"Easy" = "Einfach";
+"Medium" = "Mittel";
+"Hard" = "Schwer";
+
+/* Game Complete Screen */
+"Time's Up!" = "Zeit abgelaufen!";
+"Congratulations!" = "Herzlichen Glückwunsch!";
+"You've completed all levels!" = "Du hast alle Level abgeschlossen!";
+"Better luck next time!" = "Viel Glück beim nächsten Mal!";
+"FINAL SCORE" = "ENDPUNKTZAHL";
+
+/* Level descriptions */
+"%@ - %dpts (%d words)" = "%@ - %d Pkt. (%d Wörter)";
+
+/* Empty states */
+"—" = "—";
+
+/* Error messages */
+"Game View not found" = "Spielansicht nicht gefunden";
+"Selected level: %@" = "Gewähltes Level: %@";
+"Implement a navigation destination to your game view." = "Implementiere ein Navigationsziel für deine Spielansicht.";
+
+/* Debugging messages (optional to localize) */
+"Failed to setup audio session: %@" = "Fehler beim Einrichten der Audio-Sitzung: %@";
+"Failed to play balloon pop sound: %@" = "Fehler beim Abspielen des Ballon-Platzgeräuschs: %@";
+
+/* Word validation messages */
+"Word must be at least 3 letters" = "Das Wort muss mindestens 3 Buchstaben haben";
+"Word must contain only letters" = "Das Wort darf nur Buchstaben enthalten";
+"Word not found in dictionary" = "Wort nicht im Wörterbuch gefunden";
+"Word already used" = "Wort bereits in diesem Spiel verwendet";

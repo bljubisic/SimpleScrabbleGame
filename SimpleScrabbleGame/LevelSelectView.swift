@@ -35,7 +35,7 @@ struct LevelSelectView: View {
     var body : some View {
         NavigationStack(path: $navPath) {
             VStack {
-                Text("Pick Your Difficulty")
+                Text(NSLocalizedString("Pick Your Difficulty", comment: "Level selection title"))
                     .font(.largeTitle)
                     .padding()
                 ForEach(GameLevel.allCases, id: \.self) { (level: GameLevel) in
