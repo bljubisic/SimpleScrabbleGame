@@ -7,6 +7,9 @@
 import Foundation
 import SwiftUI
 import RealityKit
+#if canImport(UIKit)
+import UIKit
+#endif
 
 public enum GameLevel: Int, CaseIterable, Codable, Comparable {
     case easy = 0
@@ -57,6 +60,30 @@ struct Score: Codable {
     let selectedLevel: GameLevel
 }
 
+// Word validation result with detailed feedback
+enum WordValidationResult {
+    case valid
+    case tooShort
+    case containsInvalidCharacters
+    case notInDictionary
+    case alreadyUsed
+    
+    var message: String {
+        switch self {
+        case .valid:
+            return ""
+        case .tooShort:
+            return NSLocalizedString("Word must be at least 3 letters", comment: "Validation: too short")
+        case .containsInvalidCharacters:
+            return NSLocalizedString("Word must contain only letters", comment: "Validation: invalid chars")
+        case .notInDictionary:
+            return NSLocalizedString("Word not found in dictionary", comment: "Validation: not in dictionary")
+        case .alreadyUsed:
+            return NSLocalizedString("Word already used", comment: "Validation: already used")
+        }
+    }
+}
+
 class GameState: ObservableObject {
 
 // Conformance added below via extension to avoid platform issues
@@ -71,6 +98,7 @@ class GameState: ObservableObject {
     @Published var selectedSpheres: [BallModel] = []
     @Published var wordsFormed: [String] = []
     @Published var currentWord: String = ""
+    @Published var validationFeedback: String = ""
 
     private var anchorEntity: AnchorEntity?
     private var timer: Timer?
@@ -174,32 +202,43 @@ class GameState: ObservableObject {
     }
 
     func submitWord() {
-        guard currentWord.count >= 3 else {
-            print("Word too short: \(currentWord)")
-            return
-        }
-
-        guard isValidWord(currentWord) else {
-            print("Invalid word: \(currentWord)")
+        // Clear any previous feedback
+        validationFeedback = ""
+        
+        // Validate the word
+        let validationResult = validateWord(currentWord)
+        
+        switch validationResult {
+        case .valid:
+            // Calculate score for this word
+            let wordScore = calculateWordScore(currentWord)
+            currentScore += wordScore
+            wordsFormed.append(currentWord)
+            
+            // Remove used spheres
+            removeSelectedSpheres()
+            
+            // Replenish spheres to maintain fixed count
+            replenishSpheres()
+            
+            // Clear selection
             clearSelection()
-            return
+            
+            print("Word '\(currentWord)' submitted for \(wordScore) points!")
+            
+        case .tooShort, .containsInvalidCharacters, .notInDictionary, .alreadyUsed:
+            // Show validation feedback
+            validationFeedback = validationResult.message
+            print("Validation failed: \(validationResult.message)")
+            
+            // Clear selection for invalid submissions
+            clearSelection()
+            
+            // Clear feedback after 3 seconds
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3) { [weak self] in
+                self?.validationFeedback = ""
+            }
         }
-
-        // Calculate score for this word
-        let wordScore = calculateWordScore(currentWord)
-        currentScore += wordScore
-        wordsFormed.append(currentWord)
-
-        // Remove used spheres
-        removeSelectedSpheres()
-
-        // Replenish spheres to maintain fixed count
-        replenishSpheres()
-
-        // Clear selection
-        clearSelection()
-
-        print("Word '\(currentWord)' submitted for \(wordScore) points!")
     }
 
     private func removeSelectedSpheres() {
@@ -215,25 +254,92 @@ class GameState: ObservableObject {
         }
     }
 
-    private func isValidWord(_ word: String) -> Bool {
-        guard word.count >= 3 else { return false }
-
+    private func validateWord(_ word: String) -> WordValidationResult {
+        // Check minimum length
+        guard word.count >= 3 else {
+            return .tooShort
+        }
+        
+        // Check if word contains only letters (Scrabble rule)
+        let letterCharacterSet = CharacterSet.letters
+        let wordCharacterSet = CharacterSet(charactersIn: word.lowercased())
+        if !wordCharacterSet.isSubset(of: letterCharacterSet) {
+            return .containsInvalidCharacters
+        }
+        
+        // Check if word was already used
+        if wordsFormed.contains(where: { $0.lowercased() == word.lowercased() }) {
+            return .alreadyUsed
+        }
+        
+        // Check dictionary
+        if !isWordInDictionary(word) {
+            return .notInDictionary
+        }
+        
+        return .valid
+    }
+    
+    private func isWordInDictionary(_ word: String) -> Bool {
         let checker = UITextChecker()
         
-        var language = Locale.current.language.minimalIdentifier
+        // Get the current language with better fallback
+        let languageCode = getBestAvailableLanguage()
         
-        if (UITextChecker.availableLanguages.firstIndex(of: language) == nil) {
-            language = "en"
-        }
         let range = NSRange(location: 0, length: word.utf16.count)
         let misspelledRange = checker.rangeOfMisspelledWord(
             in: word,
             range: range,
             startingAt: 0,
             wrap: false,
-            language: language
+            language: languageCode
         )
+        
         return misspelledRange.location == NSNotFound
+    }
+    
+    private func getBestAvailableLanguage() -> String {
+        let availableLanguages = UITextChecker.availableLanguages
+        
+        // Get the current locale's language code
+        if let currentLanguage = Locale.current.language.languageCode?.identifier {
+            // First, try exact match
+            if availableLanguages.contains(currentLanguage) {
+                return currentLanguage
+            }
+            
+            // Try to find a match with the base language code (e.g., "en" from "en-US")
+            let baseLanguage = String(currentLanguage.prefix(2))
+            if availableLanguages.contains(baseLanguage) {
+                return baseLanguage
+            }
+            
+            // Try to find any variant of the base language
+            let matchingVariant = availableLanguages.first { lang in
+                lang.hasPrefix(baseLanguage)
+            }
+            if let variant = matchingVariant {
+                return variant
+            }
+            
+            // Special handling for common language mappings
+            let languageMappings: [String: String] = [
+                "de": "de",      // German
+                "es": "es",      // Spanish
+                "fr": "fr",      // French
+                "it": "it",      // Italian
+                "pt": "pt_BR",   // Portuguese (Brazilian as fallback)
+                "zh": "zh-Hans"  // Chinese Simplified
+            ]
+            
+            if let mappedLanguage = languageMappings[baseLanguage],
+               availableLanguages.contains(mappedLanguage) {
+                return mappedLanguage
+            }
+        }
+        
+        // Default to English if no better match found
+        return "en"
     }
     
     func startTimer() {

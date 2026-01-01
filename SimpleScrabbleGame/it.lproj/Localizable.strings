@@ -50,3 +50,9 @@
 /* Debugging messages (optional to localize) */
 "Failed to setup audio session: %@" = "Errore nella configurazione della sessione audio: %@";
 "Failed to play balloon pop sound: %@" = "Errore nella riproduzione del suono di scoppio del palloncino: %@";
+
+/* Word validation messages */
+"Word must be at least 3 letters" = "La parola deve contenere almeno 3 lettere";
+"Word must contain only letters" = "La parola deve contenere solo lettere";
+"Word not found in dictionary" = "Parola non trovata nel dizionario";
+"Word already used" = "Parola già utilizzata in questo gioco";

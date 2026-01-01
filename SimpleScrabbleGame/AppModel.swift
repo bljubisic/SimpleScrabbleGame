@@ -7,6 +7,9 @@
 
 import SwiftUI
 import RealityKit
+#if canImport(UIKit)
+import UIKit
+#endif
 
 /// Maintains app-wide state
 @MainActor

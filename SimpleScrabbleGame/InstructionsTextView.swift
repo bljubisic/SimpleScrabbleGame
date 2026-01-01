@@ -46,6 +46,19 @@ struct InstructionTextView: View {
                     .font(.subheadline)
                     .foregroundColor(.green)
                 
+                // Validation feedback
+                if !gameState.validationFeedback.isEmpty {
+                    Text(gameState.validationFeedback)
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundColor(.red)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 4)
+                        .background(Color.red.opacity(0.1))
+                        .cornerRadius(6)
+                        .transition(.scale.combined(with: .opacity))
+                }
+                
                 // Action buttons for VisionOS
                 HStack(spacing: 12) {
                     Button(action: { gameState.clearSelection() }) {

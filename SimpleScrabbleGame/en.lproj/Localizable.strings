@@ -47,6 +47,12 @@
 "Selected level: %@" = "Selected level: %@";
 "Implement a navigation destination to your game view." = "Implement a navigation destination to your game view.";
 
+/* Word validation messages */
+"Word must be at least 3 letters" = "Word must be at least 3 letters";
+"Word must contain only letters" = "Word must contain only letters";
+"Word not found in dictionary" = "Word not found in dictionary";
+"Word already used" = "Word already used this game";
+
 /* Debugging messages (optional to localize) */
 "Failed to setup audio session: %@" = "Failed to setup audio session: %@";
 "Failed to play balloon pop sound: %@" = "Failed to play balloon pop sound: %@";

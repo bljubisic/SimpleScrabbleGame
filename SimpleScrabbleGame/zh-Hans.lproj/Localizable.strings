@@ -1,0 +1,58 @@
+/* 
+  Localizable.strings
+  SimpleScrabbleGame
+  
+  Chinese Simplified Localization
+*/
+
+/* Game UI - Timer and Score */
+"TIME" = "时间";
+"SCORE" = "得分";
+"points" = "分";
+
+/* Game Instructions */
+"Tap letters to spell words!" = "点击字母拼写单词！";
+"Current Word: %@" = "当前单词：%@";
+"Score: %d" = "得分：%d";
+"Words: %d" = "单词数：%d";
+"Score: %d | Words: %d" = "得分：%d | 单词数：%d";
+
+/* Buttons */
+"Clear" = "清除";
+"Submit" = "提交";
+"Play Again" = "再玩一次";
+"Reset placement" = "重置位置";
+
+/* Level Selection */
+"Pick Your Difficulty" = "选择难度";
+"Easy" = "简单";
+"Medium" = "中等";
+"Hard" = "困难";
+
+/* Game Complete Screen */
+"Time's Up!" = "时间到！";
+"Congratulations!" = "恭喜！";
+"You've completed all levels!" = "你已完成所有关卡！";
+"Better luck next time!" = "下次好运！";
+"FINAL SCORE" = "最终得分";
+
+/* Level descriptions */
+"%@ - %dpts (%d words)" = "%@ - %d分（%d个单词）";
+
+/* Empty states */
+"—" = "—";
+
+/* Error messages */
+"Game View not found" = "游戏视图未找到";
+"Selected level: %@" = "已选关卡：%@";
+"Implement a navigation destination to your game view." = "为您的游戏视图实现导航目标。";
+
+/* Debugging messages (optional to localize) */
+"Failed to setup audio session: %@" = "音频会话设置失败：%@";
+"Failed to play balloon pop sound: %@" = "播放气球爆破声失败：%@";
+
+/* Word validation messages */
+"Word must be at least 3 letters" = "单词必须至少包含3个字母";
+"Word must contain only letters" = "单词只能包含字母";
+"Word not found in dictionary" = "词典中未找到该单词";
+"Word already used" = "该单词已在本局游戏中使用";

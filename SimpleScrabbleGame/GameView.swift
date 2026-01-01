@@ -122,6 +122,19 @@ struct GameView: View {
                                 Text(String(format: NSLocalizedString("Score: %d | Words: %d", comment: "Score and word count"), observedGameState.currentScore, observedGameState.wordsFormed.count))
                                     .font(.subheadline)
                                     .foregroundColor(.white)
+                                
+                                // Validation feedback
+                                if !observedGameState.validationFeedback.isEmpty {
+                                    Text(observedGameState.validationFeedback)
+                                        .font(.caption)
+                                        .fontWeight(.medium)
+                                        .foregroundColor(.red)
+                                        .padding(.horizontal, 12)
+                                        .padding(.vertical, 4)
+                                        .background(Color.red.opacity(0.2))
+                                        .cornerRadius(6)
+                                        .transition(.scale.combined(with: .opacity))
+                                }
                             }
 
                             // Action buttons
