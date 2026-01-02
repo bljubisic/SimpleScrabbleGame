@@ -33,11 +33,11 @@ public enum GameLevel: Int, CaseIterable, Codable, Comparable {
     var numberOfSpheres: Int {
         switch self {
         case .easy:
-            return 15
+            return 30
         case .medium:
-            return 12
+            return 20
         case .hard:
-            return 10
+            return 15
         }
     }
 
@@ -218,12 +218,6 @@ class GameState: ObservableObject {
             // Remove used spheres
             removeSelectedSpheres()
             
-            // Replenish spheres to maintain fixed count
-            replenishSpheres()
-            
-            // Clear selection
-            clearSelection()
-            
             print("Word '\(currentWord)' submitted for \(wordScore) points!")
             
         case .tooShort, .containsInvalidCharacters, .notInDictionary, .alreadyUsed:
@@ -231,14 +225,16 @@ class GameState: ObservableObject {
             validationFeedback = validationResult.message
             print("Validation failed: \(validationResult.message)")
             
-            // Clear selection for invalid submissions
-            clearSelection()
-            
             // Clear feedback after 3 seconds
             DispatchQueue.main.asyncAfter(deadline: .now() + 3) { [weak self] in
                 self?.validationFeedback = ""
             }
         }
+        // Clear selection for invalid submissions
+        clearSelection()
+        
+        // Replenish spheres to maintain fixed count
+        replenishSpheres()
     }
 
     private func removeSelectedSpheres() {
