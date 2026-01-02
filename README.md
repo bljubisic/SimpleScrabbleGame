@@ -5,9 +5,9 @@ The game has been updated with new word-formation mechanics, transforming it int
 ## Game Rules Implemented ✅
 
 ### **Level Configuration**
-- **Easy:** 15 spheres, 120 seconds (2 minutes)
-- **Medium:** 12 spheres, 90 seconds (1.5 minutes)
-- **Hard:** 10 spheres, 60 seconds (1 minute)
+- **Easy:** 30 spheres, 120 seconds (2 minutes)
+- **Medium:** 20 spheres, 90 seconds (1.5 minutes)
+- **Hard:** 15 spheres, 60 seconds (1 minute)
 
 ### **Core Gameplay**
 1. **Word Formation:** Players tap spheres to select letters and form words
