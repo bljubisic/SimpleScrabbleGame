@@ -51,6 +51,17 @@ public enum GameLevel: Int, CaseIterable, Codable, Comparable {
             return 60.0   // 1 minute
         }
     }
+    
+    var timeIncrement: Double {
+        switch self {
+        case .easy:
+            return 20.0
+        case .medium:
+            return 10.0
+        case .hard:
+            return 5.0
+        }
+    }
 }
 
 struct Score: Codable {
@@ -103,6 +114,14 @@ class GameState: ObservableObject {
     private var anchorEntity: AnchorEntity?
     private var timer: Timer?
     private var allSpheres: [BallModel] = []
+    
+    // Closure to get current camera position for AR mode
+    var getCurrentCameraPosition: (() -> SIMD3<Float>?)? = nil
+    
+    // Public accessor for AR billboard effect
+    var sphereEntities: [Entity] {
+        return allSpheres.map { $0.sphere }
+    }
     
     #if os(visionOS)
     func setupScene(content: RealityViewContent, attachments: RealityViewAttachments) {
@@ -214,6 +233,7 @@ class GameState: ObservableObject {
             let wordScore = calculateWordScore(currentWord)
             currentScore += wordScore
             wordsFormed.append(currentWord)
+            self.timeRemaining += selectedLevel.timeIncrement
             
             // Remove used spheres
             removeSelectedSpheres()
@@ -284,7 +304,7 @@ class GameState: ObservableObject {
         
         let range = NSRange(location: 0, length: word.utf16.count)
         let misspelledRange = checker.rangeOfMisspelledWord(
-            in: word,
+            in: word.lowercased(),
             range: range,
             startingAt: 0,
             wrap: false,
@@ -423,12 +443,21 @@ class GameState: ObservableObject {
 
         guard spheresToAdd > 0 else { return }
 
-        let newPositions = generateNonIntersectingPositions(for: spheresToAdd, excluding: allSpheres.map { $0.position })
+        #if os(visionOS)
+        let isARMode = false
+        let cameraPosition: SIMD3<Float>? = nil
+        #else
+        let isARMode = true
+        // Get current camera position for AR mode
+        let cameraPosition = getCurrentCameraPosition?()
+        #endif
+
+        let newPositions = generateNonIntersectingPositions(for: spheresToAdd, excluding: allSpheres.map { $0.position }, isARMode: isARMode)
         let colors = generateRandomColors(count: spheresToAdd)
 
         for i in 0..<spheresToAdd {
             let color = colors[i % colors.count]
-            let (sphere, letter) = createSphere(index: allSpheres.count + i, position: newPositions[i], useColor: color)
+            let (sphere, letter) = createSphere(index: allSpheres.count + i, position: newPositions[i], useColor: color, lookAtPosition: cameraPosition)
             let uuid = UUID(uuidString: sphere.name) ?? UUID()
             let ballModel = BallModel(id: uuid, position: sphere.position, pickedUp: false, color: color, letter: letter, sphere: sphere)
             currentGame.ballModels.append(ballModel)
@@ -437,7 +466,7 @@ class GameState: ObservableObject {
         }
     }
     
-    private func createSphere(index: Int, position: SIMD3<Float>, useColor: UIColor) -> (entity: Entity, letter: String) {
+    private func createSphere(index: Int, position: SIMD3<Float>, useColor: UIColor, lookAtPosition: SIMD3<Float>? = nil) -> (entity: Entity, letter: String) {
         // Create sphere mesh with 10cm radius (0.1 meters)
         let sphereMesh = MeshResource.generateSphere(radius: 0.1)
         // Create material with random color
@@ -465,15 +494,22 @@ class GameState: ObservableObject {
         let randomLetter = generateRandomLetter()
         addLetterToSphere(sphereEntity, letter: randomLetter)
 
-        // Orient sphere so letter faces toward anchor/player (origin)
-        // Calculate direction from sphere to origin (where player/anchor is)
-        let directionToOrigin = -position // Direction from sphere to origin
-        if length(directionToOrigin) > 0.001 {
+        // Orient sphere so letter faces toward the specified position (camera or origin)
+        let targetPosition = lookAtPosition ?? SIMD3<Float>(0, 0, 0)
+        let directionToTarget = targetPosition - position
+        
+        #if DEBUG
+        if let lookAt = lookAtPosition {
+            print("Sphere at position \(position) looking at camera position \(lookAt)")
+        }
+        #endif
+        
+        if length(directionToTarget) > 0.001 {
             // Use lookAt style rotation
-            sphereEntity.look(at: SIMD3<Float>(0, 0, 0), from: position, relativeTo: nil)
+            sphereEntity.look(at: targetPosition, from: position, relativeTo: nil)
 
             // The sphere's UV mapping places the center of the texture on the side
-            // Rotate -90 degrees around Y to bring the letter to face the anchor
+            // Rotate -90 degrees around Y to bring the letter to face the target
             let correctionRotation = simd_quatf(angle: -.pi / 2, axis: SIMD3<Float>(0, 1, 0))
             sphereEntity.transform.rotation = sphereEntity.transform.rotation * correctionRotation
         }
@@ -657,13 +693,13 @@ class GameState: ObservableObject {
 
 #if !os(visionOS)
 protocol GameStatePopulating {
-    func populateScene(root: AnchorEntity)
+    func populateScene(root: AnchorEntity, cameraPosition: SIMD3<Float>?)
 }
 #endif
 
 #if !os(visionOS)
 extension GameState: GameStatePopulating {
-    func populateScene(root: AnchorEntity) {
+    func populateScene(root: AnchorEntity, cameraPosition: SIMD3<Float>? = nil) {
         // Set the anchor entity for iOS/AR mode
         self.anchorEntity = root
 
@@ -681,7 +717,7 @@ extension GameState: GameStatePopulating {
 
         for i in 0..<numberOfSpheres {
             let color = colors[i % colors.count]
-            let (sphere, letter) = createSphere(index: i, position: positions[i], useColor: color)
+            let (sphere, letter) = createSphere(index: i, position: positions[i], useColor: color, lookAtPosition: cameraPosition)
             let uuid = UUID(uuidString: sphere.name) ?? UUID()
             let ballModel = BallModel(id: uuid, position: sphere.position, pickedUp: false, color: color, letter: letter, sphere: sphere)
             currentGame.ballModels.append(ballModel)
