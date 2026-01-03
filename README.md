@@ -5,9 +5,9 @@ The game has been updated with new word-formation mechanics, transforming it int
 ## Game Rules Implemented ✅
 
 ### **Level Configuration**
-- **Easy:** 30 spheres, 120 seconds (2 minutes)
-- **Medium:** 20 spheres, 90 seconds (1.5 minutes)
-- **Hard:** 15 spheres, 60 seconds (1 minute)
+- **Easy:** 30 spheres, 180 seconds (3 minutes)
+- **Medium:** 20 spheres, 120 seconds (2 minutes)
+- **Hard:** 15 spheres, 90 seconds (1.5 minutes)
 
 ### **Core Gameplay**
 1. **Word Formation:** Players tap spheres to select letters and form words
@@ -15,6 +15,7 @@ The game has been updated with new word-formation mechanics, transforming it int
 3. **Dictionary Validation:** Uses iOS's built-in UITextChecker to validate English words
 4. **Scoring:** Points = sum of Scrabble letter values (A=1, K=5, Q=10, etc.)
 5. **Sphere Replenishment:** After submitting a word, new spheres are automatically added to maintain the fixed count
+6. **Time Increment:** When the word is successfully submitted, players gain an additional time, 20 seconds for Easy, 10 seconds for Medium, and 5 seconds for Hard levels
 
 ## Major Changes Made
 
