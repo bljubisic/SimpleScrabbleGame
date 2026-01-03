@@ -44,11 +44,11 @@ public enum GameLevel: Int, CaseIterable, Codable, Comparable {
     var timeLimit: Double {
         switch self {
         case .easy:
-            return 120.0  // 2 minutes
+            return 180.0  // 3 minutes
         case .medium:
-            return 90.0   // 1.5 minutes
+            return 120.0   // 2 minutes
         case .hard:
-            return 60.0   // 1 minute
+            return 90.0   // 1.5 minutes
         }
     }
     
