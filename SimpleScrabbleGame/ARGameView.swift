@@ -150,8 +150,19 @@ struct ARViewContainer: UIViewRepresentable {
             // Add anchor to scene first
             arView.scene.addAnchor(anchor)
 
-            // Use GameState's populateScene method to set up game objects
-            gameState.populateScene(root: anchor)
+            // Get current camera position and convert to anchor's local space
+            var localCameraPosition: SIMD3<Float>? = nil
+            if let currentFrame = arView.session.currentFrame {
+                let cameraTransform = currentFrame.camera.transform
+                let worldCameraPosition = SIMD3<Float>(cameraTransform.columns.3.x,
+                                                       cameraTransform.columns.3.y,
+                                                       cameraTransform.columns.3.z)
+                // Convert world position to anchor's local coordinate space
+                localCameraPosition = anchor.convert(position: worldCameraPosition, from: nil)
+            }
+
+            // Use GameState's populateScene method to set up game objects with local camera position
+            gameState.populateScene(root: anchor, cameraPosition: localCameraPosition)
 
             isPlaced = true
 
@@ -164,6 +175,21 @@ struct ARViewContainer: UIViewRepresentable {
             }
 
             print("Game placed automatically on \(planeAnchor.alignment == .vertical ? "vertical" : "horizontal") plane")
+            print("AutoPlace - Camera local position: \(String(describing: localCameraPosition))")
+            
+            // Set up closure to provide camera position for sphere replenishment
+            gameState.getCurrentCameraPosition = { [weak arView, weak anchor] in
+                guard let arView = arView, let anchor = anchor else { return nil }
+                if let currentFrame = arView.session.currentFrame {
+                    let cameraTransform = currentFrame.camera.transform
+                    let worldCameraPosition = SIMD3<Float>(cameraTransform.columns.3.x,
+                                                           cameraTransform.columns.3.y,
+                                                           cameraTransform.columns.3.z)
+                    // Convert to anchor's local space
+                    return anchor.convert(position: worldCameraPosition, from: nil)
+                }
+                return nil
+            }
         }
 
         private func inferAlignmentFromRaycastResult(result: ARRaycastResult) -> Bool {
@@ -219,8 +245,19 @@ struct ARViewContainer: UIViewRepresentable {
             // Add anchor to scene first
             arView.scene.addAnchor(anchor)
 
-            // Use GameState's populateScene method to set up game objects
-            gameState.populateScene(root: anchor)
+            // Get current camera position and convert to anchor's local space
+            var localCameraPosition: SIMD3<Float>? = nil
+            if let currentFrame = arView.session.currentFrame {
+                let cameraTransform = currentFrame.camera.transform
+                let worldCameraPosition = SIMD3<Float>(cameraTransform.columns.3.x,
+                                                       cameraTransform.columns.3.y,
+                                                       cameraTransform.columns.3.z)
+                // Convert world position to anchor's local coordinate space
+                localCameraPosition = anchor.convert(position: worldCameraPosition, from: nil)
+            }
+
+            // Use GameState's populateScene method to set up game objects with local camera position
+            gameState.populateScene(root: anchor, cameraPosition: localCameraPosition)
 
             isPlaced = true
 
@@ -233,6 +270,20 @@ struct ARViewContainer: UIViewRepresentable {
             }
 
             print("Game placed successfully using raycast (isVertical: \(isVertical))")
+            
+            // Set up closure to provide camera position for sphere replenishment
+            gameState.getCurrentCameraPosition = { [weak arView, weak anchor] in
+                guard let arView = arView, let anchor = anchor else { return nil }
+                if let currentFrame = arView.session.currentFrame {
+                    let cameraTransform = currentFrame.camera.transform
+                    let worldCameraPosition = SIMD3<Float>(cameraTransform.columns.3.x,
+                                                           cameraTransform.columns.3.y,
+                                                           cameraTransform.columns.3.z)
+                    // Convert to anchor's local space
+                    return anchor.convert(position: worldCameraPosition, from: nil)
+                }
+                return nil
+            }
         }
 
         func handleEntityTap(at location: CGPoint, in arView: ARView) {
