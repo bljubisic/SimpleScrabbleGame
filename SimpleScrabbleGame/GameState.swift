@@ -557,10 +557,17 @@ class GameState: ObservableObject {
             }
             context.cgContext.fill(CGRect(origin: .zero, size: size))
 
-            // Draw the letter in pure bright white
+            // Create subtle shadow for depth
+            let shadow = NSShadow()
+            shadow.shadowColor = UIColor(white: 0, alpha: 0.5)
+            shadow.shadowOffset = CGSize(width: 2, height: 2)
+            shadow.shadowBlurRadius = 4
+            
+            // Draw the letter in bright white
             let attributes: [NSAttributedString.Key: Any] = [
                 .font: UIFont.systemFont(ofSize: 200, weight: .bold),
-                .foregroundColor: UIColor.white
+                .foregroundColor: UIColor.white,
+                .shadow: shadow
             ]
 
             let textSize = (letter as NSString).size(withAttributes: attributes)
